@@ -1,0 +1,128 @@
+/* Variables */
+:root {
+    --btn-ops-color: #27DBDE;
+    --btn-numbs-color: #C278FF;
+    --btn-numbs-background: #F8F5F0;
+    --btn-mod-color: #FF6D80;
+}
+
+/* #FFB3A1, #FF6964 */
+
+/* Imports */
+@import url('https://fonts.googleapis.com/css?family=Roboto:400,900&display=swap');
+
+/* General */
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+/* Body */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.9)), url('../imgs/background.jpg');
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+.output {
+    height: 2rem;
+}
+
+.calculator {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-top: -16.25rem;
+    margin-left: -10rem;
+    width: 20rem;
+    height: 32.5rem;
+    background-color: #0D0D0D;
+    border-radius: 1rem;
+}
+
+/* Controls */
+/* Buttons */
+.btn {
+    margin: 0.4rem;
+    font-size: 1.3rem;
+    font-weight: 900;
+    background-color: black;
+    border-radius: 50%;
+    width: 4rem;
+    height: 4rem;
+}
+
+.btn-numb {
+    background-color: var(--btn-numbs-background);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.btn:hover {
+    cursor: pointer;
+}
+
+.btn-mod:hover {
+    color: var(--btn-mod-color);
+    -webkit-box-shadow: 0px 0px 11px 6px var(--btn-mod-color);
+    -moz-box-shadow: 0px 0px 11px 6px var(--btn-mod-color);
+    box-shadow: 0px 0px 11px 6px var(--btn-mod-color);
+}
+
+.btn-numb:hover {
+    color: var(--btn-numbs-color);
+    -webkit-box-shadow: 0px 0px 11px 6px var(--btn-numbs-color);
+    -moz-box-shadow: 0px 0px 11px 6px var(--btn-numbs-color);
+    box-shadow: 0px 0px 11px 6px var(--btn-numbs-color);
+}
+
+
+.btn-op:hover {
+    color: var(--btn-ops-color);
+    -webkit-box-shadow: 0px 0px 11px 6px var(--btn-ops-color);
+    -moz-box-shadow: 0px 0px 11px 6px var(--btn-ops-color);
+    box-shadow: 0px 0px 11px 6px var(--btn-ops-color);
+}
+
+.btn {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-numb:active {
+    background-color: #c6c4c0;
+}
+
+.btn-numb:active {
+    background-color: #c6c4c0;
+}
+
+.btn-mod:active,
+.btn-op:active {
+    background-color: #191818;
+}
+
+.btn-mod {
+    display: flex;
+}
+
+#zero {
+    padding-left: 1.6rem;
+    justify-content: start;
+    border-radius: 2rem;
+    width: 8.8rem;
+}
+
+.output {
+    color: var(--btn-numbs-background);
+    font-weight: 900;
+    font-size: 2rem;
+}
