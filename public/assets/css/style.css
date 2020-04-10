@@ -40,7 +40,7 @@ body {
     margin-left: -10rem;
     width: 20rem;
     height: 32.5rem;
-    background-color: #0D0D0D;
+    background-color: rgba(13, 13, 13, 0.3);
     border-radius: 1rem;
 }
 
