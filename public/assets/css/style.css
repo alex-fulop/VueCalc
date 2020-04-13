@@ -119,10 +119,37 @@ body {
     justify-content: start;
     border-radius: 2rem;
     width: 8.8rem;
+    grid-column: 1/3;
 }
 
 .output {
     color: var(--btn-numbs-background);
     font-weight: 900;
     font-size: 2rem;
+}
+
+/* CSS Grid */
+
+.parent {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+}
+
+.numbs {
+    grid-area: 2 / 1 / 6 / 4;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.ops {
+    display: grid;
+    grid-area: 1 / 4 / 6 / 5;
+
+}
+
+.mods {
+    display: flex;
+    grid-template-rows: 1fr;
 }

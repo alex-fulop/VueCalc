@@ -15,37 +15,10 @@ Vue.component('key', {
         }
     },
     template: `
-        <div @click="updateInput(value)" :class="keyType">{{value}}</div>
+        <div @click="updateInput(value)" :class="keyType" :id="key.name">{{value}}</div>
     `,
     data() {
-        btnNumb = {
-            'btn btn-mod': {
-                'clear': 'C',
-                'AllClear': 'AC',
-                'Reverse': '+/-',
-                'percent': '%'
-            },
-            'btn btn-op': {
-                'divide': '/',
-                'multiply': 'X',
-                'substract': '-',
-                'add': '+'
-            },
-            'btn btn-numb': {
-                'zero': 0,
-                'one': 1,
-                'two': 2,
-                'three': 3,
-                'four': 4,
-                'five': 5,
-                'six': 6,
-                'seven': 7,
-                'eight': 8,
-                'nine': 9
-            }
 
-
-        }
     },
     methods: {
         updateInput(value) {
@@ -64,48 +37,142 @@ Vue.component('calculator', {
             </div>
 
             <div class="controls">
-                <div class="container numbs">
-                    <div class="row">
-                        <div id="clear" class="btn btn-mod">AC</div>
-                        <div id="allClear" class="btn btn-mod">AC</div>
-                        <div id="reverse" class="btn btn-mod">+/-</div>
-                        <div id="percent" class="btn btn-mod">%</div>
-                        <div id="divide" class="btn btn-op">/</div>
+                <div class="parent">
+                    <template v-for="(keyType, index) in keyTypes">
+                    <div :class="keyType">
+                        <template v-for="key in keys[index]">
+                            <div @click="updateInput(key.value)" :class="key.keyType" :id="key.name">{{key.value}}</div>
+                        </template>
                     </div>
-                    <div class="row">
-                        <div id="seven" class="btn btn-numb">7</div>
-                        <div @click="updateInput" id="eight" class="btn btn-numb">8</div>
-                        <div id="nine" class="btn btn-numb">9</div>
-                        <div id="multiply" class="btn btn-op">X</div>
-                    </div>
-                    <div class="row">
-                        <div @click="updateInput(4)" id="four" class="btn btn-numb">4</div>
-                        <div @click="updateInput(5)" id="five" class="btn btn-numb">5</div>
-                        <div @click="updateInput(6)" id="six" class="btn btn-numb">6</div>
-                        <div @click="updateInput('-')" id="substract" class="btn btn-op">-</div>
-                    </div>
-                    <div class="row">
-                        <div id="one" class="btn btn-numb">1</div>
-                        <div id="two" class="btn btn-numb">2</div>
-                        <div id="three" class="btn btn-numb">3</div>
-                        <div id="add" class="btn btn-op">+</div>
-                    </div>
-                    <div class="row">
-                        <div id="zero" class="btn btn-numb">0</div>
-                        <div id="comma" class="btn btn-numb">,</div>
-                        <div id="equal" class="btn btn-op">=</div>
-                    </div>
+                    </template>
                 </div>
             </div>
         </div>
     </div>
     `,
     data() {
-        return {}
+        return {
+            keyTypes: ['numbs', 'ops', 'mods'],
+            keys: [
+                [{
+                        keyType: 'btn btn-numb',
+                        value: 9,
+                        name: 'nine'
+                    },
+                    {
+                        keyType: 'btn btn-numb',
+                        value: 8,
+                        name: 'eight'
+                    },
+                    {
+                        keyType: 'btn btn-numb',
+                        value: 7,
+                        name: 'seven'
+                    },
+                    {
+                        keyType: 'btn btn-numb',
+                        value: 6,
+                        name: 'six'
+                    },
+                    {
+                        keyType: 'btn btn-numb',
+                        value: 5,
+                        name: 'five'
+                    },
+                    {
+                        keyType: 'btn btn-numb',
+                        value: 4,
+                        name: 'four'
+                    },
+                    {
+                        keyType: 'btn btn-numb',
+                        value: 3,
+                        name: 'three'
+                    },
+                    {
+                        keyType: 'btn btn-numb',
+                        value: 2,
+                        name: 'two'
+                    },
+                    {
+                        keyType: 'btn btn-numb',
+                        value: 1,
+                        name: 'one'
+                    },
+                    {
+
+                        keyType: 'btn btn-numb',
+                        value: 0,
+                        name: 'zero'
+                    },
+                    {
+                        keyType: 'btn btn-numb',
+                        value: ',',
+                        name: 'comma'
+                    },
+                ],
+                [{
+                        keyType: 'btn btn-op',
+                        value: '/',
+                        name: 'divide'
+                    },
+                    {
+                        keyType: 'btn btn-op',
+                        value: 'X',
+                        name: 'multiply'
+                    },
+                    {
+                        keyType: 'btn btn-op',
+                        value: '-',
+                        name: 'substract'
+                    },
+                    {
+                        keyType: 'btn btn-op',
+                        value: '+',
+                        name: 'add'
+                    },
+                    {
+                        keyType: 'btn btn-op',
+                        value: '=',
+                        name: 'equal'
+                    }
+                ],
+                [{
+                        keyType: 'btn btn-mod d-none',
+                        value: 'C',
+                        name: 'clear'
+                    },
+                    {
+                        keyType: 'btn btn-mod',
+                        value: 'AC',
+                        name: 'allClear'
+                    },
+                    {
+                        keyType: 'btn btn-mod',
+                        value: '+/-',
+                        name: 'reverse'
+                    },
+                    {
+                        keyType: 'btn btn-mod',
+                        value: '%',
+                        name: 'percent'
+                    }
+                ]
+            ]
+        }
+    },
+    computed: {
+
     },
     methods: {
         updateInput(value) {
             this.$emit('update-input', value);
+        },
+
+        generateKeys() {
+            keys[2].forEach(element => {
+                console.log(element);
+            });
         }
     }
 })
@@ -117,7 +184,11 @@ let app = new Vue({
     },
     methods: {
         updateInput(value) {
-            this.currentInput = this.currentInput * 10 + value;
+            if (!isNaN(value)) this.currentInput = this.currentInput * 10 + value;
+            else if (value == ',') {
+                console.log('Entered')
+                this.currentInput = parseFloat(this.currentInput);
+            }
         }
     }
 
