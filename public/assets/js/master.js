@@ -28,11 +28,12 @@ Vue.component('key', {
 })
 
 Vue.component('calculator', {
-    props: ["currentInput"],
+    props: ["currentInput", "history", "currentOp"],
     template: `
     <div class="container">
         <div class="calculator">
             <div class="output">
+                <small class="history">{{ history }} {{ currentOp }}</small>
                 {{ currentInput }}
             </div>
 
@@ -138,7 +139,7 @@ Vue.component('calculator', {
                     }
                 ],
                 [{
-                        keyType: 'btn btn-mod d-none',
+                        keyType: 'btn btn-mod',
                         value: 'C',
                         name: 'clear'
                     },
@@ -168,28 +169,106 @@ Vue.component('calculator', {
         updateInput(value) {
             this.$emit('update-input', value);
         },
-
-        generateKeys() {
-            keys[2].forEach(element => {
-                console.log(element);
-            });
-        }
     }
 })
 
 let app = new Vue({
     el: '#app',
     data: {
+        history: 0,
         currentInput: 0,
+        currentOp: ''
     },
     methods: {
         updateInput(value) {
-            if (!isNaN(value)) this.currentInput = this.currentInput * 10 + value;
-            else if (value == ',') {
-                console.log('Entered')
-                this.currentInput = parseFloat(this.currentInput);
+            switch (value) {
+                case ',':
+                    if (Number.isInteger(this.currentInput)) {
+                        this.currentInput = this.currentInput.toFixed() + '.';
+                        console.log(this.currentInput);
+                    }
+                    break;
+                case '+':
+                    if (this.history)
+                        this.history = this.history + parseFloat(this.currentInput);
+                    else this.history = parseFloat(this.currentInput);
+                    this.currentOp = '+';
+                    this.currentInput = 0;
+                    break;
+                case '-':
+                    if (this.history)
+                        this.history = this.history - parseFloat(this.currentInput);
+                    else this.history = parseFloat(this.currentInput);
+                    this.currentInput = 0;
+                    this.currentOp = '-';
+                    break;
+                case 'X':
+                    if (this.history)
+                        this.history = parseFloat(this.currentInput) * this.history;
+                    else this.history = parseFloat(this.currentInput);
+                    this.currentInput = 0;
+                    this.currentOp = 'X';
+                    break;
+                case '/':
+                    if (this.history)
+                        this.history = parseFloat(this.currentInput) / this.history;
+                    else this.history = parseFloat(this.currentInput);
+                    this.currentInput = 0;
+                    this.currentOp = '/';
+                    break;
+                case '=':
+                    this.currentInput = parseFloat(this.currentInput);
+                    switch (this.currentOp) {
+                        case '+':
+                            console.log(this.history + this.currentInput);
+                            this.currentInput = this.history + this.currentInput;
+                            break;
+                        case '-':
+                            this.currentInput = this.history - this.currentInput;
+                            break;
+                        case 'X':
+                            this.currentInput = this.history * this.currentInput;
+                            break;
+                        case '/':
+                            this.currentInput = this.history / this.currentInput;
+                            this.currentInput = this.currentInput.toFixed(6);
+                            break;
+                    }
+                    this.currentOp = '';
+                    this.history = 0;
+                    break;
+                case 'C':
+                    this.currentInput = 0;
+                    break;
+                case 'AC':
+                    this.currentInput = 0;
+                    this.history = 0;
+                    this.currentOp = '';
+                    break;
+                case '+/-':
+                    this.currentInput = -parseFloat(this.currentInput);
+                    break;
+                case '%':
+                    this.currentInput = parseFloat(this.currentInput) / 100;
+                    break;
+                default:
+                    this.currentInput = parseFloat(this.currentInput);
+                    if (Number.isInteger(this.currentInput))
+                        this.currentInput = this.currentInput * 10 + value;
+                    else {
+                        this.currentInput = (this.currentInput + value);
+                    }
+                    break;
+            }
+            let AC = document.getElementById('allClear');
+            let C = document.getElementById('clear');
+            if (this.currentInput == 0) {
+                AC.style.display = 'flex';
+                C.style.display = 'none';
+            } else {
+                AC.style.display = 'none';
+                C.style.display = 'flex';
             }
         }
     }
-
 })
