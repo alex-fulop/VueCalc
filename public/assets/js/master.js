@@ -32,8 +32,8 @@ Vue.component('calculator', {
     template: `
     <div class="container">
         <div class="calculator">
-            <div class="output">
-                <small class="history">{{ history }} {{ currentOp }}</small>
+            <div id="output">
+                <small id="history">{{ history }} {{ currentOp }}</small>
                 {{ currentInput }}
             </div>
 
@@ -57,53 +57,53 @@ Vue.component('calculator', {
             keys: [
                 [{
                         keyType: 'btn btn-numb',
-                        value: 9,
-                        name: 'nine'
-                    },
-                    {
-                        keyType: 'btn btn-numb',
-                        value: 8,
-                        name: 'eight'
-                    },
-                    {
-                        keyType: 'btn btn-numb',
-                        value: 7,
+                        value: '7',
                         name: 'seven'
                     },
                     {
                         keyType: 'btn btn-numb',
-                        value: 6,
-                        name: 'six'
+                        value: '8',
+                        name: 'eight'
                     },
                     {
                         keyType: 'btn btn-numb',
-                        value: 5,
-                        name: 'five'
+                        value: '9',
+                        name: 'nine'
                     },
                     {
                         keyType: 'btn btn-numb',
-                        value: 4,
+                        value: '4',
                         name: 'four'
                     },
                     {
                         keyType: 'btn btn-numb',
-                        value: 3,
-                        name: 'three'
+                        value: '5',
+                        name: 'five'
                     },
                     {
                         keyType: 'btn btn-numb',
-                        value: 2,
+                        value: '6',
+                        name: 'six'
+                    },
+                    {
+                        keyType: 'btn btn-numb',
+                        value: '1',
+                        name: 'one'
+                    },
+                    {
+                        keyType: 'btn btn-numb',
+                        value: '2',
                         name: 'two'
                     },
                     {
                         keyType: 'btn btn-numb',
-                        value: 1,
-                        name: 'one'
+                        value: '3',
+                        name: 'three'
                     },
                     {
 
                         keyType: 'btn btn-numb',
-                        value: 0,
+                        value: '0',
                         name: 'zero'
                     },
                     {
@@ -164,6 +164,7 @@ Vue.component('calculator', {
     },
     computed: {
 
+
     },
     methods: {
         updateInput(value) {
@@ -175,100 +176,164 @@ Vue.component('calculator', {
 let app = new Vue({
     el: '#app',
     data: {
-        history: 0,
-        currentInput: 0,
+        history: '',
+        currentInput: '',
         currentOp: ''
     },
     methods: {
         updateInput(value) {
             switch (value) {
                 case ',':
-                    if (Number.isInteger(this.currentInput)) {
-                        this.currentInput = this.currentInput.toFixed() + '.';
-                        console.log(this.currentInput);
-                    }
+                    if (!(this.currentInput).includes('.'))
+                        this.currentInput = this.currentInput + '.';
                     break;
                 case '+':
-                    if (this.history)
-                        this.history = this.history + parseFloat(this.currentInput);
-                    else this.history = parseFloat(this.currentInput);
-                    this.currentOp = '+';
-                    this.currentInput = 0;
+                    this.history = this.currentInput ? this.getFormattedNumber(this.reverseFormat(this.history) + this.reverseFormat(this.currentInput)) : '';
+                    this.currentOp = this.currentInput ? '+' : '';
+                    this.currentInput = '';
+                    this.changeSize(this.history, 'history');
                     break;
                 case '-':
-                    if (this.history)
-                        this.history = this.history - parseFloat(this.currentInput);
-                    else this.history = parseFloat(this.currentInput);
-                    this.currentInput = 0;
-                    this.currentOp = '-';
+                    if (this.history !== '' && this.currentInput !== '')
+                        this.history = this.getFormattedNumber(this.reverseFormat(this.history) - this.reverseFormat(this.currentInput));
+                    else this.history = this.currentInput ? this.currentInput : this.history;
+                    this.currentOp = this.currentInput ? '-' : '';
+                    this.currentInput = '';
+                    this.changeSize(this.history, 'history');
                     break;
                 case 'X':
-                    if (this.history)
-                        this.history = parseFloat(this.currentInput) * this.history;
-                    else this.history = parseFloat(this.currentInput);
-                    this.currentInput = 0;
-                    this.currentOp = 'X';
+                    if (this.history !== '' && this.currentInput !== '')
+                        this.history = this.getFormattedNumber(this.reverseFormat(this.history) * this.reverseFormat(this.currentInput));
+                    else this.history = this.currentInput ? this.currentInput : this.history;
+                    this.currentOp = this.currentInput ? 'X' : '';
+                    this.currentInput = '';
+                    this.changeSize(this.history, 'history');
                     break;
                 case '/':
-                    if (this.history)
-                        this.history = parseFloat(this.currentInput) / this.history;
-                    else this.history = parseFloat(this.currentInput);
-                    this.currentInput = 0;
-                    this.currentOp = '/';
+                    if (this.history !== '' && this.currentInput !== '')
+                        this.history = this.getFormattedNumber(this.reverseFormat(this.history) / this.reverseFormat(this.currentInput));
+                    else this.history = this.currentInput ? this.currentInput : this.history;
+                    this.currentOp = this.currentInput ? '/' : '';
+                    this.currentInput = '';
+                    this.changeSize(this.history, 'history');
                     break;
                 case '=':
-                    this.currentInput = parseFloat(this.currentInput);
-                    switch (this.currentOp) {
-                        case '+':
-                            console.log(this.history + this.currentInput);
-                            this.currentInput = this.history + this.currentInput;
-                            break;
-                        case '-':
-                            this.currentInput = this.history - this.currentInput;
-                            break;
-                        case 'X':
-                            this.currentInput = this.history * this.currentInput;
-                            break;
-                        case '/':
-                            this.currentInput = this.history / this.currentInput;
-                            this.currentInput = this.currentInput.toFixed(6);
-                            break;
-                    }
+                    this.currentInput = this.getFormattedNumber(this.dynamicCompute(this.currentOp, this.reverseFormat(this.history), this.reverseFormat(this.currentInput)));
+                    this.changeSize(this.currentInput, 'output');
                     this.currentOp = '';
-                    this.history = 0;
+                    this.history = '';
                     break;
                 case 'C':
-                    this.currentInput = 0;
+                    this.currentInput = '';
+                    this.changeSize(this.currentInput, 'output');
                     break;
                 case 'AC':
-                    this.currentInput = 0;
-                    this.history = 0;
+                    this.currentInput = '';
+                    this.history = '';
                     this.currentOp = '';
+                    this.changeSize(this.currentInput, 'output');
                     break;
                 case '+/-':
-                    this.currentInput = -parseFloat(this.currentInput);
+                    if (this.currentInput != '')
+                        if (!this.currentInput.includes('-'))
+                            this.currentInput = '-' + this.currentInput;
+                        else this.currentInput = this.currentInput.replace('-', '');
                     break;
                 case '%':
-                    this.currentInput = parseFloat(this.currentInput) / 100;
+                    this.currentInput = this.currentInput / 100;
+                    this.changeSize(this.currentInput, 'output');
                     break;
                 default:
-                    this.currentInput = parseFloat(this.currentInput);
-                    if (Number.isInteger(this.currentInput))
-                        this.currentInput = this.currentInput * 10 + value;
-                    else {
-                        this.currentInput = (this.currentInput + value);
+                    this.changeSize(this.currentInput, 'output');
+                    if (!((this.currentInput).includes('.'))) {
+                        this.currentInput = this.getFormattedNumber(this.currentInput + value);
+                    } else {
+                        this.currentInput = this.currentInput + value;
                     }
                     break;
             }
+
             let AC = document.getElementById('allClear');
             let C = document.getElementById('clear');
-            if (this.currentInput == 0) {
+            if (this.currentInput == '') {
                 AC.style.display = 'flex';
                 C.style.display = 'none';
             } else {
                 AC.style.display = 'none';
                 C.style.display = 'flex';
             }
+        },
+        reverseFormat(number) {
+            return Number(number.replace(/,/g, ''));
+        },
+
+        changeSize(number, element) {
+            let output = document.getElementById(element);
+            if (element == 'output') {
+                if (number == '') {
+                    output.style.fontSize = '4rem';
+                } else if (number.length > 10) {
+                    output.style.fontSize = '2rem';
+                } else if (number.length > 6) {
+                    output.style.fontSize = '2.5rem';
+                }
+            } else if (element == 'history') {
+                if (number == '') {
+                    output.style.fontSize = '2rem';
+                } else if (number.length > 12) {
+                    output.style.fontSize = '1.5rem';
+                } else if (number.length > 8) {
+                    output.style.fontSize = '1.8rem';
+                }
+            }
+        },
+        getFormattedNumber(number) {
+            let n = Number(number);
+            if (number > 0.1) {
+                value = n.toLocaleString('en');
+                return value;
+            }
+            return number;
+        },
+
+        dynamicCompute(op, a, b) {
+            let operators = {
+                '+': function (a, b) {
+                    return a + b
+                },
+                '-': function (a, b) {
+                    return a - b
+                },
+                'X': function (a, b) {
+                    return a * b
+                },
+                '/': function (a, b) {
+                    return a / b
+                }
+
+            };
+            return operators[op](a, b);
         }
+
+        //         dynamicSwitch(op, a, b) {
+
+        //     let localHistory = this.history;
+        //     let localCurrentInput = this.currentInput;
+        //     let path = op == '=' ? localCurrentInput : localHistory;
+
+        //     if (localHistory !== '' && localCurrentInput !== '') {
+        //         path = this.getFormattedNumber(this.dynamicCompute(op, a, b));
+        //     } else localHistory = localCurrentInput ? localCurrentInput : localHistory;
+
+        //     if (op == '=') {
+        //         this.changeSize(localCurrentInput, 'output');
+        //         localHistory = '';
+        //         this.currentOp = '';
+        //     } else {
+        //         this.changeSize(this.history, 'history');
+        //         localCurrentInput = '';
+        //         this.currentOp = localCurrentInput ? op : '';
+        //     }
+        // },
     }
 })
