@@ -187,7 +187,7 @@ let app = new Vue({
         updateInput(value) {
             switch (value) {
                 case ',':
-                    if (!(this.currentInput).includes('.'))
+                    if (!(this.currentInput).includes('.') && this.currentInput)
                         this.currentInput = this.currentInput + '.';
                     break;
                 case '+':
@@ -329,7 +329,7 @@ let app = new Vue({
                 let newY = prevY - e.clientY;
 
                 const rect = el.getBoundingClientRect();
-                console.log(el.style.left);
+
                 el.style.left = rect.left - newX + 'px';
                 el.style.top = rect.top - newY + 'px';
 

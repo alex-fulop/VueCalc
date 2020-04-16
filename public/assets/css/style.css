@@ -20,6 +20,7 @@
 
 /* Body */
 body {
+    overflow: hidden;
     font-family: 'Roboto', sans-serif;
     background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.9)), url('../imgs/background.jpg');
     background-position: center center;
@@ -49,16 +50,17 @@ body {
 }
 
 .container {
-    text-align: center !important;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .calculator {
-    display: inline-block;
     position: absolute;
-    top: 18%;
-    left: 40%;
     border-radius: 1rem;
     transition: background-color 0.5s ease-out;
+    min-width: 18.75rem;
 }
 
 .calculator:hover {
