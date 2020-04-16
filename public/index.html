@@ -17,8 +17,8 @@
 <body>
 
     <div id="app">
-        <calculator @update-input="updateInput" :current-input="currentInput" :history="history"
-            :current-op="currentOp"></calculator>
+        <calculator @update-input="updateInput" :current-input="currentInput" :history="history" :current-op="currentOp"
+            @mouse-down="mouseDown"></calculator>
     </div>
 
     <!-- Optional JavaScript -->

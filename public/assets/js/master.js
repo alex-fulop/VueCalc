@@ -31,7 +31,7 @@ Vue.component('calculator', {
     props: ["currentInput", "history", "currentOp"],
     template: `
     <div class="container">
-        <div class="calculator">
+        <div class="calculator" @mousedown="mouseDown">
             <div id="output">
                 <small id="history">{{ history }} {{ currentOp }}</small>
                 {{ currentInput }}
@@ -170,6 +170,9 @@ Vue.component('calculator', {
         updateInput(value) {
             this.$emit('update-input', value);
         },
+        mouseDown(e) {
+            this.$emit('mouse-down', e);
+        }
     }
 })
 
@@ -188,40 +191,11 @@ let app = new Vue({
                         this.currentInput = this.currentInput + '.';
                     break;
                 case '+':
-                    this.history = this.currentInput ? this.getFormattedNumber(this.reverseFormat(this.history) + this.reverseFormat(this.currentInput)) : '';
-                    this.currentOp = this.currentInput ? '+' : '';
-                    this.currentInput = '';
-                    this.changeSize(this.history, 'history');
-                    break;
                 case '-':
-                    if (this.history !== '' && this.currentInput !== '')
-                        this.history = this.getFormattedNumber(this.reverseFormat(this.history) - this.reverseFormat(this.currentInput));
-                    else this.history = this.currentInput ? this.currentInput : this.history;
-                    this.currentOp = this.currentInput ? '-' : '';
-                    this.currentInput = '';
-                    this.changeSize(this.history, 'history');
-                    break;
                 case 'X':
-                    if (this.history !== '' && this.currentInput !== '')
-                        this.history = this.getFormattedNumber(this.reverseFormat(this.history) * this.reverseFormat(this.currentInput));
-                    else this.history = this.currentInput ? this.currentInput : this.history;
-                    this.currentOp = this.currentInput ? 'X' : '';
-                    this.currentInput = '';
-                    this.changeSize(this.history, 'history');
-                    break;
                 case '/':
-                    if (this.history !== '' && this.currentInput !== '')
-                        this.history = this.getFormattedNumber(this.reverseFormat(this.history) / this.reverseFormat(this.currentInput));
-                    else this.history = this.currentInput ? this.currentInput : this.history;
-                    this.currentOp = this.currentInput ? '/' : '';
-                    this.currentInput = '';
-                    this.changeSize(this.history, 'history');
-                    break;
                 case '=':
-                    this.currentInput = this.getFormattedNumber(this.dynamicCompute(this.currentOp, this.reverseFormat(this.history), this.reverseFormat(this.currentInput)));
-                    this.changeSize(this.currentInput, 'output');
-                    this.currentOp = '';
-                    this.history = '';
+                    this.dynamicSwitch(value, this.history, this.currentInput);
                     break;
                 case 'C':
                     this.currentInput = '';
@@ -235,21 +209,15 @@ let app = new Vue({
                     break;
                 case '+/-':
                     if (this.currentInput != '')
-                        if (!this.currentInput.includes('-'))
-                            this.currentInput = '-' + this.currentInput;
-                        else this.currentInput = this.currentInput.replace('-', '');
+                        this.currentInput = -this.currentInput;
                     break;
                 case '%':
-                    this.currentInput = this.currentInput / 100;
+                    if (this.currentInput)
+                        this.currentInput = parseFloat(this.reverseFormat(this.currentInput) / 100);
                     this.changeSize(this.currentInput, 'output');
                     break;
                 default:
-                    this.changeSize(this.currentInput, 'output');
-                    if (!((this.currentInput).includes('.'))) {
-                        this.currentInput = this.getFormattedNumber(this.currentInput + value);
-                    } else {
-                        this.currentInput = this.currentInput + value;
-                    }
+                    this.read(value);
                     break;
             }
 
@@ -263,10 +231,8 @@ let app = new Vue({
                 C.style.display = 'flex';
             }
         },
-        reverseFormat(number) {
-            return Number(number.replace(/,/g, ''));
-        },
 
+        //Utility function used to shrink the size of the history/input depending on the size of the number within
         changeSize(number, element) {
             let output = document.getElementById(element);
             if (element == 'output') {
@@ -287,6 +253,8 @@ let app = new Vue({
                 }
             }
         },
+
+        //Formats a number by converting it to a string with a comma after each 3rd number
         getFormattedNumber(number) {
             let n = Number(number);
             if (number > 0.1) {
@@ -295,11 +263,18 @@ let app = new Vue({
             }
             return number;
         },
+        //The oposite of the getFormattedNumber method, returns a number from a string by removing the commas
+        reverseFormat(number) {
+            if (isNaN(number))
+                return Number(number.replace(/,/g, ''));
+            return number;
+        },
 
+        //Utility method used to dynamically perform an operation between two parameters with custom operator
         dynamicCompute(op, a, b) {
             let operators = {
                 '+': function (a, b) {
-                    return a + b
+                    return Number(a) + Number(b)
                 },
                 '-': function (a, b) {
                     return a - b
@@ -313,27 +288,59 @@ let app = new Vue({
 
             };
             return operators[op](a, b);
+        },
+
+        //Utility method used to alter the history/input, used to maintain the general flow of the app
+        dynamicSwitch(op, a, b) {
+            if (a !== '' && b !== '') {
+                if (op !== '=') {
+                    this.history = this.getFormattedNumber(this.dynamicCompute(this.currentOp, this.reverseFormat(a), this.reverseFormat(b)));
+                } else {
+                    this.currentInput = this.getFormattedNumber(this.dynamicCompute(this.currentOp, this.reverseFormat(a), this.reverseFormat(b)));
+                }
+            } else {
+                this.history = this.currentInput ? this.currentInput : this.history;
+            }
+
+            this.currentOp = op == '=' ? '' : op;
+            op == '=' ? this.history = '' : this.currentInput = '';
+            op != '=' ? this.changeSize(this.history, 'history') : this.changeSize(this.currentInput, 'output');
+
+        },
+        //Function used for reading
+        read(value) {
+            this.changeSize(this.currentInput, 'output');
+            if (!((this.currentInput).includes('.'))) {
+                this.currentInput = this.getFormattedNumber(this.reverseFormat(this.currentInput) + value);
+            } else {
+                this.currentInput = this.currentInput + value;
+            }
+        },
+        mouseDown(e) {
+            let el = document.getElementsByClassName('calculator')[0];
+            window.addEventListener('mousemove', mouseMove);
+            window.addEventListener('mouseup', mouseUp);
+
+            let prevX = e.clientX;
+            let prevY = e.clientY;
+
+            function mouseMove(e) {
+                let newX = prevX - e.clientX;
+                let newY = prevY - e.clientY;
+
+                const rect = el.getBoundingClientRect();
+                console.log(el.style.left);
+                el.style.left = rect.left - newX + 'px';
+                el.style.top = rect.top - newY + 'px';
+
+                prevX = e.clientX;
+                prevY = e.clientY;
+            }
+
+            function mouseUp() {
+                window.removeEventListener('mousemove', mouseMove);
+                window.removeEventListener('mouseup', mouseUp);
+            }
         }
-
-        //         dynamicSwitch(op, a, b) {
-
-        //     let localHistory = this.history;
-        //     let localCurrentInput = this.currentInput;
-        //     let path = op == '=' ? localCurrentInput : localHistory;
-
-        //     if (localHistory !== '' && localCurrentInput !== '') {
-        //         path = this.getFormattedNumber(this.dynamicCompute(op, a, b));
-        //     } else localHistory = localCurrentInput ? localCurrentInput : localHistory;
-
-        //     if (op == '=') {
-        //         this.changeSize(localCurrentInput, 'output');
-        //         localHistory = '';
-        //         this.currentOp = '';
-        //     } else {
-        //         this.changeSize(this.history, 'history');
-        //         localCurrentInput = '';
-        //         this.currentOp = localCurrentInput ? op : '';
-        //     }
-        // },
     }
 })

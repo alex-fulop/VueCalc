@@ -48,15 +48,21 @@ body {
     height: 8rem;
 }
 
+.container {
+    text-align: center !important;
+}
+
 .calculator {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    margin-top: -16.25rem;
-    margin-left: -10rem;
-    width: 20rem;
-    height: 32.5rem;
+    display: inline-block;
+    position: absolute;
+    top: 18%;
+    left: 40%;
     border-radius: 1rem;
+    transition: background-color 0.5s ease-out;
+}
+
+.calculator:hover {
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
 /* Controls */
